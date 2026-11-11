@@ -1,0 +1,32 @@
+# Copy to config.toml and edit. API keys come from the environment, never from this file.
+
+lab_id = "TP2"
+
+[llm]                                 # used from M2
+provider = "openai_compat"
+base_url = "https://..."
+model = "..."
+api_key_env = "LABQUIZ_API_KEY"
+
+[languages]
+quiz = "fr"
+teacher = "fr"
+
+[quiz]                                # used from M3
+pool_size = 6
+per_student = 3
+
+[grading]                             # used from M5
+levels = ["Perfect", "Very good", "Insufficient", "Bad", "Not done"]
+
+[notebook]
+output_cap = 1500                     # characters kept per cell output (head + tail)
+
+[ingest]
+# File names are <prefix>_<LastName>_<LastName>....ipynb. Leave unset to auto-detect the prefix.
+# filename_prefix = "TP2_ISD_SA2025"
+
+[scrub]
+# Names that are not on the roster but appear in notebooks (teachers, assistants).
+# Roster names are always scrubbed; these are scrubbed as well.
+extra_names = []
