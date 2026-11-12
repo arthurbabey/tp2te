@@ -1,4 +1,4 @@
-"""labquiz command line: brief | run | report | eval | render.
+"""tp2te command line: brief | run | report | eval | render.
 
 - ``brief``: L0 from the template (and solution), once per lab.
 - ``run``: ingest submissions (+ roster), privacy pre-flight, match sections,
@@ -302,7 +302,7 @@ def _not_yet(milestone: str):
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="labquiz")
+    p = argparse.ArgumentParser(prog="tp2te")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     b = sub.add_parser("brief", help="L0: lab brief and generic questions from the template")
@@ -321,7 +321,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--filename-prefix", help="file name prefix before the last names, e.g. TP2_ISD_SA2025")
     r.add_argument("--template", help="assignment notebook; without it the run stops after ingest")
     r.add_argument("--solution", help="solution notebook (optional)")
-    r.add_argument("--brief", help="brief.json from 'labquiz brief' (otherwise L0 runs here)")
+    r.add_argument("--brief", help="brief.json from 'tp2te brief' (otherwise L0 runs here)")
     r.add_argument("--groups", help="comma-separated group ids to analyse, e.g. G01,G03")
     r.add_argument("--max-groups", type=int, help="analyse only the first N groups")
     r.add_argument("--no-llm", action="store_true", help="stop after matching and hard checks")

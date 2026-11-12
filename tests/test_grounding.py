@@ -1,7 +1,7 @@
 from conftest import code, make_nb, md, stream
-from labquiz.core.models import Evidence, Issue, QuestionDraft
-from labquiz.core.notebook import parse_notebook
-from labquiz.core.questions import ground_issue, is_grounded, question_grounded
+from tp2te.core.models import Evidence, Issue, QuestionDraft
+from tp2te.core.notebook import parse_notebook
+from tp2te.core.questions import ground_issue, is_grounded, question_grounded
 
 DOC = parse_notebook(make_nb(
     code("scaler.fit(X)\nX_train, X_test = train_test_split(X,  y)", [stream("accuracy:   0.99\n")]),

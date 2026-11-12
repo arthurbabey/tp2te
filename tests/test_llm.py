@@ -8,22 +8,22 @@ import urllib.error
 import pytest
 
 from conftest import LAB, filled, lab_cell, lab_template, make_nb, md, nb_bytes
-from labquiz import cli
-from labquiz.core import store
-from labquiz.core.analysis import analyse_group, build_completeness
-from labquiz.core.brief import generate_brief
-from labquiz.core.checks import hard_checks
-from labquiz.core.config import Config
-from labquiz.core.matching import build_template, match_notebook
-from labquiz.core.models import (Evidence, GroupAnalysis, GroupRun, Issue, LabBrief, QuestionDraft, SectionBrief,
+from tp2te import cli
+from tp2te.core import store
+from tp2te.core.analysis import analyse_group, build_completeness
+from tp2te.core.brief import generate_brief
+from tp2te.core.checks import hard_checks
+from tp2te.core.config import Config
+from tp2te.core.matching import build_template, match_notebook
+from tp2te.core.models import (Evidence, GroupAnalysis, GroupRun, Issue, LabBrief, QuestionDraft, SectionBrief,
                                  SectionJudgment)
-from labquiz.core.notebook import parse_notebook
-from labquiz.core.prompts import PrivacyError, call_llm, versions
-from labquiz.core.scrub import find_leaks
-from labquiz.llm import openai_compat
-from labquiz.llm.base import LLMError, make_client, prompt_key
-from labquiz.llm.fake import CachingClient, FakeClient
-from labquiz.llm.openai_compat import OpenAICompatClient
+from tp2te.core.notebook import parse_notebook
+from tp2te.core.prompts import PrivacyError, call_llm, versions
+from tp2te.core.scrub import find_leaks
+from tp2te.llm import openai_compat
+from tp2te.llm.base import LLMError, make_client, prompt_key
+from tp2te.llm.fake import CachingClient, FakeClient
+from tp2te.llm.openai_compat import OpenAICompatClient
 
 CFG = Config()
 TEMPLATE = build_template(parse_notebook(lab_template(), "T"), "LAB9", CFG.template)
@@ -210,7 +210,7 @@ def test_analyse_group(tmp_path):
 
 
 def test_completeness_missing_section_fallback():
-    from labquiz.core.models import HardFinding
+    from tp2te.core.models import HardFinding
     f = [HardFinding(kind="missing_section", section_id="S3.1", cell_id=None, detail="")]
     c = build_completeness(TEMPLATE, [], f)
     assert {s.section_id: s.final_status for s in c.sections}["S3.1"] == "missing"

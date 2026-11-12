@@ -3,8 +3,8 @@ import pytest
 from nbformat.v4 import new_raw_cell
 
 from conftest import code, error, image, make_nb, md, result, stream
-from labquiz.core.models import SectionMatch, Template, TemplateSection
-from labquiz.core.notebook import (IMAGE_MARKER, NotebookParseError, parse_notebook, read_notebook,
+from tp2te.core.models import SectionMatch, Template, TemplateSection
+from tp2te.core.notebook import (IMAGE_MARKER, NotebookParseError, parse_notebook, read_notebook,
                                    serialise_notebook, truncate)
 
 

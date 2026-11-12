@@ -10,7 +10,7 @@ class LLMConfig(BaseModel):
     provider: str = "openai_compat"   # openai_compat | fake
     base_url: str = ""
     model: str = ""
-    api_key_env: str = "LABQUIZ_API_KEY"
+    api_key_env: str = "TP2TE_API_KEY"
     # json_schema: response_format json_schema; json_object: JSON mode; prompt: schema in the prompt,
     # JSON read from the reply (local models without schema support). Always validated with Pydantic.
     structured: str = "json_schema"

@@ -7,9 +7,9 @@ import unicodedata
 import pytest
 
 from conftest import REAL_DATA, REAL_ROSTER, code, error, image, make_nb, md, result, stream
-from labquiz.core.ingest import ingest
-from labquiz.core.notebook import parse_notebook, serialise_notebook
-from labquiz.core.scrub import Scrubber, find_leaks, fold, name_tokens
+from tp2te.core.ingest import ingest
+from tp2te.core.notebook import parse_notebook, serialise_notebook
+from tp2te.core.scrub import Scrubber, find_leaks, fold, name_tokens
 
 NAMES = ["Zoé Mürner-Kahl", "Ilian Dufresnoy", "Yoan Ait Benali"]
 
@@ -109,7 +109,7 @@ def test_real_notebooks_preflight():
 def test_real_notebooks_preflight_without_roster():
     """File names only give last names; first names must still be scrubbed.
     The full names of the local roster are the independent reference."""
-    from labquiz.core.ingest import load_roster
+    from tp2te.core.ingest import load_roster
     names = [r.student for r in load_roster(REAL_ROSTER)]
     res = ingest(REAL_DATA)
     assert len(res.students) == len(names)

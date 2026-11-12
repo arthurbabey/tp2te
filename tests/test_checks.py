@@ -3,10 +3,10 @@
 import pytest
 
 from conftest import LAB, code, error, filled, lab_cell, lab_template, make_nb, md, stream
-from labquiz.core.checks import hard_checks
-from labquiz.core.config import Config
-from labquiz.core.matching import build_template, match_notebook
-from labquiz.core.notebook import parse_notebook
+from tp2te.core.checks import hard_checks
+from tp2te.core.config import Config
+from tp2te.core.matching import build_template, match_notebook
+from tp2te.core.notebook import parse_notebook
 
 CFG = Config()
 TEMPLATE = build_template(parse_notebook(lab_template(), "T"), "LAB9", CFG.template)

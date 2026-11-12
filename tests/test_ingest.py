@@ -1,7 +1,7 @@
 import pytest
 
 from conftest import ROSTER_CSV, group_nb, nb_bytes, zip_from
-from labquiz.core.ingest import RosterRow, build_students, group_ids, ingest, load_roster, match_group
+from tp2te.core.ingest import RosterRow, build_students, group_ids, ingest, load_roster, match_group
 
 
 def test_load_roster_french_semicolon_bom(tmp_path):
@@ -103,7 +103,7 @@ def test_ingest_rejects_other_inputs(roster, tmp_path):
 
 
 # ---------- file name pattern, no roster ----------
-from labquiz.core.ingest import filename_surnames, harvest_names  # noqa: E402
+from tp2te.core.ingest import filename_surnames, harvest_names  # noqa: E402
 from conftest import md  # noqa: E402
 
 

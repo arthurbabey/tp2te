@@ -1,6 +1,6 @@
 """Prompt rendering, prompt versions, and the one way to call the LLM.
 
-Prompts are Jinja files in ``labquiz/prompts``. A prompt's version is the hash
+Prompts are Jinja files in ``tp2te/prompts``. A prompt's version is the hash
 of its file, so any edit shows up in the log and the run's config snapshot
 without anyone having to bump a number.
 

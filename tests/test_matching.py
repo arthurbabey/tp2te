@@ -5,9 +5,9 @@ cells, other editors), which exercises the text-only path."""
 import pytest
 
 from conftest import FILLED, LAB, REPO, code, filled, lab_cell, lab_template, make_nb, md
-from labquiz.core.config import Config
-from labquiz.core.matching import build_template, gradable_sections, match_notebook, section_start
-from labquiz.core.notebook import parse_notebook, read_notebook, serialise_notebook
+from tp2te.core.config import Config
+from tp2te.core.matching import build_template, gradable_sections, match_notebook, section_start
+from tp2te.core.notebook import parse_notebook, read_notebook, serialise_notebook
 
 CFG = Config()
 SECTION = {k: s for k, _, _, s in LAB}

@@ -1,10 +1,10 @@
-# labquiz v0 — build spec
+# tp2te v0 — build spec
 
 Nov 11, 2026 · @arthur
 
 ## 0. For the build session
 
-This doc is the spec for a Claude Code session that builds `labquiz` v0.
+This doc is the spec for a Claude Code session that builds `tp2te` v0.
 
 - Build in the milestone order of section 14. Finish and test one milestone before starting the next.
 - The layout in section 4 and the models in section 5 are the contract. Change them only when a real notebook forces it, and record the change in the spec.
@@ -102,10 +102,10 @@ The top two rows are `core/` and `llm/` and run from the CLI without Streamlit; 
 `core/` and `llm/` import nothing from Streamlit, so they carry over to FastAPI unchanged.
 
 ```text
-labquiz/
+tp2te/
   pyproject.toml
   config.example.toml          # provider, model, question mix, languages, limits
-  src/labquiz/
+  src/tp2te/
     core/
       models.py                # all Pydantic models
       ingest.py                # zip + roster -> groups, students
@@ -133,7 +133,7 @@ labquiz/
       Home.py                  # pick or create a run
       pages/1_Upload.py  2_Review.py  3_Print.py  4_Grade.py
       state.py                 # thin session-state helpers
-    cli.py                     # labquiz brief | run | eval | render
+    cli.py                     # tp2te brief | run | eval | render
   tests/
     fixtures/                  # template, perturbed notebooks, recorded LLM responses
     test_matching.py  test_checks.py  test_grounding.py  test_assign.py  test_scrub.py
@@ -661,7 +661,7 @@ Structured output: pass `schema.model_json_schema()` through the provider's JSON
 provider = "openai_compat"
 base_url = "https://..."
 model = "..."
-api_key_env = "LABQUIZ_API_KEY"
+api_key_env = "TP2TE_API_KEY"
 
 [llm.overrides]
 summary = { model = "..." }      # cheaper model for L4 if wanted
@@ -700,7 +700,7 @@ Test the deterministic parts with unit tests and the LLM parts against a small s
 - Assignment: for random pools and group sizes, no two students share an identical set, the mix holds when it can, and the same seed gives the same result.
 - Scrubber: after serialisation, no roster name, email or home-directory path appears in any prompt. This test guards the privacy promise, so it runs on every real notebook too, as a pre-flight check.
 
-**Evaluation on past submissions (`labquiz eval`)**
+**Evaluation on past submissions (`tp2te eval`)**
 
 - Pick one past lab and 5 submissions, including a messy one and a near-perfect one. Annotate each: status per section, and the issues you would want caught.
 - Report per run: section-matching accuracy, agreement on completeness, share of your issues found, number of issues you judge false, grounding pass rate, and the share of questions you would approve without editing.
@@ -717,11 +717,11 @@ Test the deterministic parts with unit tests and the LLM parts against a small s
 
 Five milestones, each with a check that must pass before the next starts. The pipeline is built as a CLI first; Streamlit goes on top at milestone 4.
 
-1. **M1: read notebooks.** Repo, models, `notebook.py`, `scrub.py`, `ingest.py`, `store.py`. Done when `labquiz run` parses the real submissions zip and roster, writes a run file, and the scrubber test finds no roster name in any serialised notebook.
+1. **M1: read notebooks.** Repo, models, `notebook.py`, `scrub.py`, `ingest.py`, `store.py`. Done when `tp2te run` parses the real submissions zip and roster, writes a run file, and the scrubber test finds no roster name in any serialised notebook.
 2. **M2: matching, checks, first LLM calls.** `matching.py`, `checks.py`, `OpenAICompatClient`, `FakeClient`, L0 and L1. Done when the perturbation tests pass and the CLI prints a completeness table and an issue report for three real notebooks.
 3. **M3: questions and sheets.** L2, grounding check, `assign.py`, `render.py`. Done when the CLI goes from zip to printable HTML sheets, every printed question is grounded, and the assignment tests pass. Then iterate on the L1 and L2 prompts with Arthur against the real notebooks.
 4. **M4: Upload, Review and Print screens.** Editing, approve and reject, L3 regenerate, locked assignments. Done when a full lab can be generated, reviewed and printed from the browser, and a refresh loses nothing.
-5. **M5: Grade screen, CSV, class summary.** Done when grades entered on screen survive a restart and the CSV matches them, and `labquiz eval` produces its report on the annotated notebooks.
+5. **M5: Grade screen, CSV, class summary.** Done when grades entered on screen survive a restart and the CSV matches them, and `tp2te eval` produces its report on the annotated notebooks.
 
 **If something must be dropped, drop in this order:** class summary, the completeness tab (show hard findings only), the Grade screen (export a CSV template and fill it by hand), L3 regenerate. Do not drop the grounding check, the scrubber, or disk persistence.
 
@@ -756,11 +756,11 @@ Log of deviations from sections 4 and 5, per section 0. Source: the 9 TP2 submis
 ### M2 (Nov 12, 2026)
 
 - **Sections come from exercise numbers, not only headings.** The TP2 template has four `##` parts; the exercises are bold numbers at the top of a cell (`**3.1)`, `<b>1.1)</b>`). Both open a section (`template.item_pattern`); ids come from the number (`S3.1`, `S4`). Only sections with a task or question cell are judged for completeness (17 in TP2). Task cells: code cells holding only comments, or a comment with a task marker ("votre code ici"); question cells: markdown cells with an answer slot (`*Réponse:*`, `*Description head():*`). All markers are config (`[template]`); `extra_task_cells` lists cells no marker catches (TP2 4.7, "modify one line").
-- `Cell.hidden` (new field): **past submissions contain the assistants' grading** ("Corrections Partie 1: Points obtenus: 4/5, Remarques: …"). Cells with a staff marker are kept on disk but never serialised into a prompt and never checked. They are a ready-made annotation for `labquiz eval` (M5).
+- `Cell.hidden` (new field): **past submissions contain the assistants' grading** ("Corrections Partie 1: Points obtenus: 4/5, Remarques: …"). Cells with a staff marker are kept on disk but never serialised into a prompt and never checked. They are a ready-made annotation for `tp2te eval` (M5).
 - Matching uses a global monotone alignment (weighted LCS over a cell similarity matrix, nbformat id as the heaviest anchor) instead of greedy matching followed by a longest increasing subsequence. Same intent as section 6 steps 2 to 4, order-consistent by construction; out-of-order cells with an id match or similarity ≥ 0.9 are kept as moved anchors.
 - Answer detection by subtraction also looks at the added cells right after a task or question cell, since students often answer in a new cell below.
 - `core/prompts.py` (new module): renders the Jinja prompts, versions them by file hash (no manual bump), and is the single path to the LLM (`call_llm`). It refuses to send a prompt containing a roster name, email or home path (a guard independent of the scrubber) and writes every call, including failures, to `llm_log.jsonl`.
 - `llm/fake.py` also holds `CachingClient`: real calls are recorded under `runs/.llm_cache/` in the format `FakeClient` replays, so a repeated run costs nothing and a real run can be replayed offline.
 - The grounding check lives in `core/questions.py` from M2 on, because L1 issues already need it.
-- CLI: `labquiz report <run_dir>` reprints the completeness table and issue report; `run` gains `--solution`, `--brief`, `--groups`, `--max-groups`, `--no-llm`.
+- CLI: `tp2te report <run_dir>` reprints the completeness table and issue report; `run` gains `--solution`, `--brief`, `--groups`, `--max-groups`, `--no-llm`.
 - Measured sizes on TP2 (replacing the assumptions of section 12): serialised notebook about 50k characters, template 33k, solution 62k; an L1 prompt with the solution is about 115k characters, roughly 30k tokens, against 21k assumed.

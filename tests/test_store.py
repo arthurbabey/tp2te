@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 
 from conftest import REPO, nb_bytes, zip_from, group_nb
-from labquiz import cli
-from labquiz.core import store
-from labquiz.core.models import GroupRun, LabRun, NotebookDoc, Student
-from labquiz.core.scrub import Scrubber
+from tp2te import cli
+from tp2te.core import store
+from tp2te.core.models import GroupRun, LabRun, NotebookDoc, Student
+from tp2te.core.scrub import Scrubber
 
 
 def _run() -> LabRun:
@@ -68,7 +68,7 @@ def test_cli_run_fails_on_leak(submissions_dir, roster, tmp_path, monkeypatch, c
 
 
 def test_core_never_imports_streamlit():
-    for p in (REPO / "src" / "labquiz").rglob("*.py"):
-        if "app" in p.relative_to(REPO / "src" / "labquiz").parts:
+    for p in (REPO / "src" / "tp2te").rglob("*.py"):
+        if "app" in p.relative_to(REPO / "src" / "tp2te").parts:
             continue
         assert "streamlit" not in p.read_text(), p
