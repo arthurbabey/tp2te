@@ -1,0 +1,39 @@
+You are given the lab brief, the result of automatic checks, and one
+group's submitted notebook. Section tags come from automatic matching and
+may be wrong when match_confidence is low; use your judgment on where work
+really belongs.
+{{ solution_block }}
+
+Task 1, completeness. For each section in the brief, decide:
+- done: the required code is present and ran, and written questions are
+  answered with real content;
+- partial: some required part is absent, not run, failing, or answered
+  with a placeholder;
+- missing: no meaningful student work.
+Judge whether the work is there, not whether it is correct. Give one
+sentence of reason. Take the automatic findings into account but overrule
+them when they are clearly wrong, and say so.
+
+Task 2, issues. List problems in this group's work, most important first,
+at most {{ max_issues }}. Look for: bugs; methodological errors (for example
+leakage, evaluating on training data, wrong metric for the task); results
+that are too good, too bad or inconsistent with the code; written answers
+that misinterpret the group's own results; choices that work but are hard
+to defend. For each: section, category, severity, a short concept tag
+(reuse tags from the brief when one fits), a title, a two-sentence
+explanation for the teacher, and evidence quotes.
+
+Task 3, choices. List up to {{ max_choices }} decisions this group made that
+are correct or defensible and that a student who understands the work
+should be able to justify (a parameter value, a preprocessing step, a
+model, a metric). Give evidence quotes.
+
+<brief>
+{{ brief_json }}
+</brief>
+<automatic_findings>
+{{ hard_findings }}
+</automatic_findings>
+<notebook>
+{{ notebook_serialised }}
+</notebook>

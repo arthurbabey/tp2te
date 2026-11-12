@@ -94,3 +94,57 @@ def zip_from(entries: dict[str, bytes], utf8_flag: bool = True) -> bytes:
         for name, data in entries.items():
             zf.writestr(cls(name), data)
     return buf.getvalue()
+
+
+# ---------- a small lab in the conventions of the real TP2 template ----------
+# (key, kind, source, section). Keys double as nbformat ids, so "ids kept" is the
+# normal case and "ids regenerated" is simulated by renaming them.
+LAB = [
+    ("intro", "md", "# Lab 9\n\nIntro text about the lab and how it is graded.", "S0"),
+    ("h1", "md", "## 1. Loading data\n\nWe load the iris dataset and look at it.", "S1"),
+    ("load", "code", "import pandas as pd\ndf = pd.read_csv('iris.csv')", "S1"),
+    ("q11", "md", "**1.1) Show the first rows of the DataFrame using head().**", "S1.1"),
+    ("t11", "code", "# Votre code ici\n", "S1.1"),
+    ("q12", "md", "**1.2) Describe the columns of the dataset in full sentences.**\n\n*Réponse:*", "S1.2"),
+    ("staff1", "md", "<b>Corrections Partie 1: </b> Points obtenus: /5\n\nRemarques de l'assistant:", "S1.2"),
+    ("h2", "md", "## 2. Model\n\nWe train a classifier on the data.", "S2"),
+    ("q21", "md", "**2.1) Split the data into a training and a test set with a fixed seed.**", "S2.1"),
+    ("t21", "code", "# Votre code ici\n", "S2.1"),
+    ("q22", "md", "<p><b>2.2)</b> Fit a logistic regression and report the accuracy on the test set.</p>", "S2.2"),
+    ("t22", "code", "# Votre code ici\n", "S2.2"),
+    ("q23", "md", "**2.3) Why do we evaluate on the test set and not on the training set?**", "S2.3"),
+    ("a23", "md", "*Réponse:*", "S2.3"),
+    ("h3", "md", "## 3. Conclusion\n\nSummarise what you learned in this lab.", "S3"),
+    ("q31", "md", "**3.1) What would you change to improve the model?**\n\n*Réponse:*", "S3.1"),
+]
+
+# What a diligent group writes into each cell (appended to the template text).
+FILLED = {
+    "t11": "df.head()",
+    "q12": "The dataset has four numeric columns measuring sepals and petals, and a species label.",
+    "t21": "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)",
+    "t22": "model = LogisticRegression().fit(X_train, y_train)\nprint(model.score(X_test, y_test))",
+    "a23": "Because the training score is optimistic: the model has already seen those rows.",
+    "q31": "We would scale the features and tune the regularisation with cross-validation.",
+}
+
+
+def lab_cell(key: str, source: str | None = None, *, cell_id: str | None = None, ec: int | None = 1,
+             outputs=()):
+    _, kind, src, _ = next(x for x in LAB if x[0] == key)
+    src = src if source is None else source
+    if kind == "md":
+        c = md(src)
+    else:
+        c = code(src, outputs, execution_count=ec)
+    c["id"] = cell_id or key
+    return c
+
+
+def lab_template() -> nbformat.NotebookNode:
+    return make_nb(*(lab_cell(k) for k, *_ in LAB))
+
+
+def filled(key: str) -> str:
+    _, kind, src, _ = next(x for x in LAB if x[0] == key)
+    return (src.rstrip("\n") + "\n" + FILLED[key]) if key in FILLED else src

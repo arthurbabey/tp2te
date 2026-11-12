@@ -3,10 +3,13 @@
 lab_id = "TP2"
 
 [llm]                                 # used from M2
-provider = "openai_compat"
-base_url = "https://..."
+provider = "openai_compat"            # any OpenAI-compatible endpoint: hosted, Swiss/EU host, Ollama, vLLM
+base_url = "https://..."              # e.g. http://localhost:11434/v1 for Ollama
 model = "..."
-api_key_env = "LABQUIZ_API_KEY"
+api_key_env = "LABQUIZ_API_KEY"       # name of the environment variable holding the key
+structured = "json_schema"            # json_schema | json_object | prompt (local models without schema support)
+workers = 5                           # groups analysed in parallel
+cache = true                          # identical calls replayed from runs/.llm_cache
 
 [languages]
 quiz = "fr"
@@ -21,6 +24,26 @@ levels = ["Perfect", "Very good", "Insufficient", "Bad", "Not done"]
 
 [notebook]
 output_cap = 1500                     # characters kept per cell output (head + tail)
+
+[template]
+# How the assignment notebook marks sections, tasks and questions. The defaults fit the TP2 template:
+# "## 1." headings, "**3.1)" / "<b>1.1)</b>" exercise numbers, "*Réponse:*" answer slots,
+# code cells holding only comments (or "votre code ici") as tasks, "Points obtenus" grading cells.
+heading_level = 2
+# task_markers = ["votre code ici", "complétez", "utilisez la méthode"]
+# not_task_markers = ["n'est pas corrigée", "ne modifiez pas"]
+# staff_markers = ["points obtenus"]  # grading cells: never in a prompt
+extra_task_cells = ["f8396840"]       # TP2 4.7: "modify one line" in the given scatterplot code
+
+[matching]
+fuzzy_threshold = 0.6
+low_confidence = 0.5
+min_answer_chars = 20                 # fewer new characters under a question: unanswered
+
+[analysis]
+max_issues = 8
+max_choices = 5
+n_generic = 8
 
 [ingest]
 # File names are <prefix>_<LastName>_<LastName>....ipynb. Leave unset to auto-detect the prefix.

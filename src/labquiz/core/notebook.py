@@ -126,10 +126,11 @@ def serialise_cell(c: Cell) -> str:
 def serialise_notebook(doc: NotebookDoc, matches: Sequence[SectionMatch] | None = None,
                        template: Template | None = None) -> str:
     """Whole notebook as prompt text. With matches, cells are wrapped in sections;
-    cells no match claims go into a trailing "unmatched" section so nothing is hidden."""
-    by_id = {c.cell_id: c for c in doc.cells}
+    cells no match claims go into a trailing "unmatched" section so no student work is lost.
+    Hidden (staff) cells are never serialised."""
+    by_id = {c.cell_id: c for c in doc.cells if not c.hidden}
     if not matches:
-        return "\n".join(serialise_cell(c) for c in doc.cells)
+        return "\n".join(serialise_cell(c) for c in doc.cells if not c.hidden)
     titles = {s.section_id: s.title for s in template.sections} if template else {}
     out, seen = [], set()
     for m in matches:
@@ -140,7 +141,7 @@ def serialise_notebook(doc: NotebookDoc, matches: Sequence[SectionMatch] | None 
                 out.append(serialise_cell(by_id[cid]))
                 seen.add(cid)
         out.append("</section>")
-    rest = [c for c in doc.cells if c.cell_id not in seen]
+    rest = [c for c in doc.cells if c.cell_id not in seen and not c.hidden]
     if rest:
         out.append('<section id="unmatched" title="" match_confidence="0.00">')
         out.extend(serialise_cell(c) for c in rest)

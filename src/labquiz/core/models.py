@@ -5,6 +5,8 @@ Deviations from the spec, forced by the real notebooks (see SPEC.md section 16):
   submitted cells, which makes them the strongest matching anchor.
 - ``LabRun.template`` is optional: a run can be created from submissions and a
   roster before the template is available (M1).
+- ``Cell.hidden``: staff cells (assistants' grading, "Points obtenus: 4/5") are
+  kept on disk but never serialised into a prompt and never checked (M2).
 """
 
 from datetime import datetime
@@ -26,6 +28,7 @@ class Cell(BaseModel):
     origin: Literal["unchanged", "modified", "added"] = "added"   # vs template
     template_cell_id: str | None = None
     nb_cell_id: str | None = None     # nbformat id as found in the file (spec change)
+    hidden: bool = False              # staff cell: never in a prompt (spec change)
 
 
 class NotebookDoc(BaseModel):
