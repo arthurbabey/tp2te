@@ -1,5 +1,10 @@
-"""Config file (TOML) -> typed settings. Only the parts used so far are strict."""
+"""Config file (TOML) -> typed settings. Only the parts used so far are strict.
 
+LLM endpoint, model and key can also come from the environment or a ``.env`` file
+(see ``load_dotenv`` and ``apply_env``); values set in the TOML take precedence.
+"""
+
+import os
 import tomllib
 from pathlib import Path
 
@@ -10,7 +15,7 @@ class LLMConfig(BaseModel):
     provider: str = "openai_compat"   # openai_compat | fake
     base_url: str = ""
     model: str = ""
-    api_key_env: str = "TP2TE_API_KEY"
+    api_key_env: str = ""             # env var holding the key; empty: first of API_KEY_ENVS that is set
     # json_schema: response_format json_schema; json_object: JSON mode; prompt: schema in the prompt,
     # JSON read from the reply (local models without schema support). Always validated with Pydantic.
     structured: str = "json_schema"
@@ -94,11 +99,66 @@ class Config(BaseModel):
     analysis: AnalysisConfig = Field(default_factory=AnalysisConfig)
 
 
-def load_config(path: str | Path | None) -> Config:
+# Environment variables read by apply_env, in order of preference.
+BASE_URL_ENVS = ("LLM_BASE_URL",)
+MODEL_ENVS = ("LLM_MODEL", "MODEL")
+API_KEY_ENVS = ("TP2TE_API_KEY", "LLM_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY")
+
+
+def load_dotenv(path: str | Path = ".env") -> list[str]:
+    """Read KEY=VALUE lines into os.environ. Variables already set in the shell win.
+    Supports comments, blank lines, ``export KEY=...`` and quoted values. Returns the keys set."""
+    p = Path(path)
+    if not p.is_file():
+        return []
+    set_keys = []
+    for line in p.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.removeprefix("export ").partition("=")
+        key, value = key.strip(), value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        elif " #" in value:
+            value = value.split(" #", 1)[0].rstrip()
+        if key and key not in os.environ:
+            os.environ[key] = value
+            set_keys.append(key)
+    return set_keys
+
+
+def _unset(value: str) -> bool:
+    return not value or value.endswith("...")   # placeholders copied from config.example.toml
+
+
+def _first_env(names) -> tuple[str, str] | None:
+    for n in names:
+        if os.environ.get(n):
+            return n, os.environ[n]
+    return None
+
+
+def apply_env(cfg: Config) -> Config:
+    """Fill LLM settings left unset in the TOML from the environment."""
+    llm = cfg.llm
+    if _unset(llm.base_url) and (hit := _first_env(BASE_URL_ENVS)):
+        llm.base_url = hit[1]
+    if _unset(llm.model) and (hit := _first_env(MODEL_ENVS)):
+        llm.model = hit[1]
+    if not llm.api_key_env and (hit := _first_env(API_KEY_ENVS)):
+        llm.api_key_env = hit[0]    # only the name is stored, never the key
+    return cfg
+
+
+def load_config(path: str | Path | None, *, env: bool = False) -> Config:
+    """TOML (or defaults); with ``env=True`` unset LLM settings are filled from the environment."""
     if path is None:
-        return Config()
-    with open(path, "rb") as f:
-        return Config.model_validate(tomllib.load(f))
+        cfg = Config()
+    else:
+        with open(path, "rb") as f:
+            cfg = Config.model_validate(tomllib.load(f))
+    return apply_env(cfg) if env else cfg
 
 
 def snapshot(cfg: Config) -> dict:

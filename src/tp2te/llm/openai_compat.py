@@ -26,9 +26,9 @@ class OpenAICompatClient:
     def __init__(self, base_url: str, model: str, api_key: str | None = None, *,
                  structured: str = "json_schema", timeout_s: float = 300, http_retries: int = 3):
         if not base_url or base_url.endswith("..."):
-            raise LLMError("llm.base_url is not set in the config")
+            raise LLMError("llm.base_url is not set (config TOML or LLM_BASE_URL in .env)")
         if not model or model == "...":
-            raise LLMError("llm.model is not set in the config")
+            raise LLMError("llm.model is not set (config TOML or LLM_MODEL / MODEL in .env)")
         if structured not in ("json_schema", "json_object", "prompt"):
             raise LLMError(f"llm.structured must be json_schema, json_object or prompt, not {structured!r}")
         self.url = base_url.rstrip("/") + "/chat/completions"

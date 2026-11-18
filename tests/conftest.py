@@ -65,6 +65,16 @@ def group_nb(names_line: str, extra: str = "") -> nbformat.NotebookNode:
     )
 
 
+@pytest.fixture(autouse=True)
+def isolated_llm_env(monkeypatch):
+    """Tests never see the developer's .env or shell LLM settings (no real API calls)."""
+    from tp2te import cli
+    from tp2te.core.config import API_KEY_ENVS, BASE_URL_ENVS, MODEL_ENVS
+    for n in (*BASE_URL_ENVS, *MODEL_ENVS, *API_KEY_ENVS):
+        monkeypatch.delenv(n, raising=False)
+    monkeypatch.setattr(cli, "load_dotenv", lambda *a, **k: [])
+
+
 @pytest.fixture
 def roster(tmp_path) -> Path:
     p = tmp_path / "roster.csv"

@@ -15,7 +15,7 @@ from pathlib import Path
 
 from .core import store
 from .core.brief import generate_brief, serialise_solution
-from .core.config import Config, load_config, snapshot
+from .core.config import Config, load_config, load_dotenv, snapshot
 from .core.ingest import IngestResult, ingest
 from .core.matching import build_template, gradable_sections
 from .core.models import GroupRun, HardFinding, LabBrief, LabRun, Template
@@ -153,7 +153,7 @@ def print_brief(b: LabBrief) -> None:
 
 # ---------- commands ----------
 def cmd_brief(args) -> int:
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, env=True)
     lab_id = args.lab_id or cfg.lab_id
     names = list(cfg.scrub.extra_names)
     template = load_template(args.template, lab_id, cfg, names)
@@ -184,7 +184,7 @@ def _select(gids: list[str], arg: str | None, limit: int | None) -> list[str]:
 
 
 def cmd_run(args) -> int:
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, env=True)
     lab_id = args.lab_id or cfg.lab_id
     extra = cfg.scrub.extra_names
     res = ingest(args.submissions, args.roster, extra_names=extra, output_cap=cfg.notebook.output_cap,
@@ -341,6 +341,7 @@ def main(argv: list[str] | None = None) -> int:
         s.set_defaults(func=_not_yet(ms))
 
     args = p.parse_args(argv)
+    load_dotenv()   # ./.env, without overriding the shell environment
     return args.func(args)
 
 

@@ -1,12 +1,14 @@
-# Copy to config.toml and edit. API keys come from the environment, never from this file.
+# Optional. Copy to config.toml, edit, and pass it with --config config.toml.
+# Without it, built-in defaults are used. API keys come from the environment or .env, never from this file.
 
 lab_id = "TP2"
 
 [llm]                                 # used from M2
 provider = "openai_compat"            # any OpenAI-compatible endpoint: hosted, Swiss/EU host, Ollama, vLLM
-base_url = "https://..."              # e.g. http://localhost:11434/v1 for Ollama
-model = "..."
-api_key_env = "TP2TE_API_KEY"         # name of the environment variable holding the key
+base_url = "https://..."              # or LLM_BASE_URL in .env; e.g. http://localhost:11434/v1 for Ollama
+model = "..."                         # or LLM_MODEL / MODEL in .env
+# api_key_env = "OPENROUTER_API_KEY"  # env var holding the key; default: first set of
+                                      # TP2TE_API_KEY, LLM_API_KEY, OPENROUTER_API_KEY, OPENAI_API_KEY
 structured = "json_schema"            # json_schema | json_object | prompt (local models without schema support)
 workers = 5                           # groups analysed in parallel
 cache = true                          # identical calls replayed from runs/.llm_cache
